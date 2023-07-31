@@ -10,6 +10,11 @@ from .serializers import UserLoginSerializer,BlogSerializer,AdminUserSerializer,
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import Blog, Comment
 
+from django.http import HttpResponse
+
+def home(request):
+    response = HttpResponse("Hello, Welcome to my Blog Page ", )
+    return response
 
 
 class UserRegistrationView(generics.CreateAPIView):
