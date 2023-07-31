@@ -9,8 +9,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import UserLoginSerializer,BlogSerializer,AdminUserSerializer,CommentSerializer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import Blog, Comment
-
 from django.http import HttpResponse
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 def home(request):
     response = HttpResponse("Hello, Welcome to my Blog Page ", )
@@ -25,10 +27,20 @@ class UserRegistrationView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-
         email_subject = 'Welcome to our Blogging Platform'
-        email_message = f"Thank you for registering on our Blogging Platform, {user.username}!"
-        send_mail(email_subject, email_message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
+        email_context = {
+            'username': user.username,
+        }
+        email_html_message = render_to_string('mail.html', email_context)
+        email_plain_message = strip_tags(email_html_message)  
+        email = EmailMultiAlternatives(
+            subject=email_subject,
+            body=email_plain_message,
+            from_email=settings.EMAIL_HOST_USER,
+            to=[user.email],
+        )
+        email.attach_alternative(email_html_message, "text/html") 
+        email.send()
 
         return Response('Registration successful. An email has been sent to your registered email address.', status=status.HTTP_201_CREATED)
 
