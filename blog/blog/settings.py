@@ -69,8 +69,8 @@ EMAIL_HOST = 'sandbox.smtp.mailtrap.io'  # Replace with your email host
 EMAIL_PORT = 587  # Replace with your email port
 EMAIL_USE_TLS = True  # Set to False if using SSL
 EMAIL_USE_SSL = False  # Set to True if using SSL
-EMAIL_HOST_USER = ''  # Replace with your email address
-EMAIL_HOST_PASSWORD = ''  # Replace with your email password
+EMAIL_HOST_USER = '727d98c24e1e51'  # Replace with your email address
+EMAIL_HOST_PASSWORD = 'a802b80adbee99'  # Replace with your email password
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

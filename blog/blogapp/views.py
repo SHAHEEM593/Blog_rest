@@ -67,12 +67,45 @@ class UserLoginView(generics.CreateAPIView):
     
 
 
+from django.core.exceptions import ValidationError
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from .models import Blog
+
 class BlogListCreateView(generics.ListCreateAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        instance = serializer.save(author=self.request.user)
+        subject = "Post Created"
+        from_email = "mohammadshaheem593@gmail.com"
+        to_email = [self.request.user.email]
+        html_file_path = "templates/email_template.html"
+        with open(html_file_path, "r") as html_file:
+            html_content = html_file.read()
+        html_content = html_content.replace("{{ Blog.title }}", instance.title)
+        html_content = html_content.replace("{{ Blog.content }}", instance.content)
+        if instance.image:
+            html_content = html_content.replace("{{ Blog.image.url }}", instance.image.url)
+        else:
+            html_content = html_content.replace("{{ Blog.image }}", "")
+
+        email = EmailMultiAlternatives(subject, "", from_email,to_email)
+        email.attach_alternative(html_content, "text/html")
+        if instance.image:
+            try:
+                email.attach_file(instance.image.path)
+            except Exception as e:
+                raise ValidationError("Error: " + str(e))
+
+        try:
+            email.send()
+        except Exception as e:
+            raise ValidationError("Error: " + str(e))
+
+        return Response({"message": "Succesfully created"})
 
 class BlogDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Blog.objects.all()
