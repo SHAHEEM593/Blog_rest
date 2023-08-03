@@ -13,6 +13,10 @@ from django.http import HttpResponse
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.core.exceptions import ValidationError
+
+
+
 
 def home(request):
     response = HttpResponse("Hello, Welcome to my Blog Page ", )
@@ -67,11 +71,6 @@ class UserLoginView(generics.CreateAPIView):
     
 
 
-from django.core.exceptions import ValidationError
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
-from .models import Blog
 
 class BlogListCreateView(generics.ListCreateAPIView):
     queryset = Blog.objects.all()
