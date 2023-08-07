@@ -39,12 +39,6 @@ class BlogSerializer(serializers.ModelSerializer):
 
 
 
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username',]
-
 class CommentSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     blog = serializers.PrimaryKeyRelatedField(queryset=Blog.objects.all(), write_only=True)
